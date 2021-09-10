@@ -1,0 +1,17 @@
+[package]
+name = "dolphin"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+lazy_static = {}
+tokio = { version = "1.11.0", features = ["full"] }
+reqwest = { features = ["json", "gzip", "brotli"] }
+serde="1.0"
+serde_derive="1.0"
+serde_json = { }
+ws = {}
+eventual = {}
+base64 = {}
+hematite-nbt = {}
+redis = {  version = "0.21.2", features = ["tokio-comp"] }
