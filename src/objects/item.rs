@@ -2,19 +2,19 @@ use crate::Result;
 
 use crate::objects::data::PartialNbt;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ConfiguredAuctionItem {
 	pub item: AuctionItem,
 	pub nbt: PartialNbt
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ConfiguredEndedAuctionItem {
 	pub item: EndedAuctionItem,
 	pub nbt: PartialNbt
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct EndedAuctionItem {
 	#[serde(rename = "auction_id")]
 	pub uuid: String,
@@ -26,7 +26,7 @@ pub struct EndedAuctionItem {
 	pub seller_profile: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct AuctionItem {
    	pub uuid: String,
    	#[serde(rename = "item_bytes")]

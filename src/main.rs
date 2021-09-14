@@ -1,5 +1,5 @@
 extern crate redis;
-use dolphin::util::threader::{start};
+use dolphin::util::threader::{start, start_ended};
 use dolphin::util::websocket::{start as start_websocket};
 use dolphin::util::redutil::{init};
 
@@ -13,7 +13,7 @@ async fn main() {
    std::thread::sleep(std::time::Duration::new(5, 0));
   }
 
-  // start_ended();
+    start_ended();
    loop {
      // Some random dangerous shitty code here  
 

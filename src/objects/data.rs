@@ -1,25 +1,25 @@
 use std::collections::HashMap;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct PartialNbt {
 	pub i: Vec<PartialNbtElement>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct PartialNbtElement {
 	#[serde(rename = "Count")]
 	pub count: i8,
 	pub tag: PartialTag,
 }
 //extra?.rarity_upgrades?.value
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct PartialTag {
 	#[serde(rename = "ExtraAttributes")]
 	pub extra_attributes: PartialExtraAttr,
 	pub display: DisplayInfo,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct PartialExtraAttr {
 	#[serde(rename = "rarity_upgrades")]
 	pub recombed: Option<i32>, 
@@ -41,7 +41,7 @@ pub struct PartialExtraAttr {
 	pub pet: Option<String>
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct DisplayInfo {
 	#[serde(rename = "Name")]
 	pub name: String,
@@ -49,7 +49,7 @@ pub struct DisplayInfo {
 	pub lore: Vec<String>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Pet {
     #[serde(rename = "type")]
     pub pet_type: String,

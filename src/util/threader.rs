@@ -58,7 +58,10 @@ pub fn parse(item: AuctionItem) -> ConfiguredAuctionItem {
         item: item,
     };
 
-    let id: &String = &i.nbt.i[0].tag.extra_attributes.id;
+    let clone = i.clone();
+
+    let id: &String = &clone.nbt.i[0].tag.extra_attributes.id; 
+    let name: &String = &clone.nbt.i[0].tag.display.name;
 
     if id == "ENCHANTED_BOOK" {
         let enchants = i.nbt.i[0]
@@ -74,6 +77,18 @@ pub fn parse(item: AuctionItem) -> ConfiguredAuctionItem {
         }
     }
 
+    if id == "PET" {
+        let pet: Pet = serde_json::from_str(i.nbt.i[0].tag.extra_attributes.pet.as_ref().unwrap()).unwrap();
+        let start: usize = name.find(" ").unwrap();
+        let end: usize = name.find("]").unwrap();
+        let level: &str = &name[start..end];
+        let f = level.replace(" ", "");
+        i.nbt.i[0].tag.extra_attributes.id = format!("{}-{};{}", pet.tier, pet.pet_type, f);
+
+        println!("Changed Pets name to {}", format!("{}-{};{}", pet.tier, pet.pet_type, f));
+    }
+
+
     return i;
 }
 
@@ -85,9 +100,9 @@ pub fn parse_ended(item: EndedAuctionItem) -> ConfiguredEndedAuctionItem {
         nbt: _nbt,
         item: item,
     };
-
-    
-    let id: &String = &i.nbt.i[0].tag.extra_attributes.id;
+    let clone = i.clone();
+    let id: &String = &clone.nbt.i[0].tag.extra_attributes.id; 
+    let name: &String = &clone.nbt.i[0].tag.display.name;
 
     if id == "ENCHANTED_BOOK" {
         let enchants = i.nbt.i[0]
@@ -101,6 +116,17 @@ pub fn parse_ended(item: EndedAuctionItem) -> ConfiguredEndedAuctionItem {
                 format! {"{};{}", enchant.to_uppercase(), level}.to_string();
             break;
         }
+    }
+
+    if id == "PET" {
+        let pet: Pet = serde_json::from_str(i.nbt.i[0].tag.extra_attributes.pet.as_ref().unwrap()).unwrap();
+        let start: usize = name.find(" ").unwrap();
+        let end: usize = name.find("]").unwrap();
+        let level: &str = &name[start..end];
+        let f = level.replace(" ", "");
+        i.nbt.i[0].tag.extra_attributes.id = format!("{}-{};{}", pet.tier, pet.pet_type, f);
+
+        println!("Changed Pets name to {}", format!("{}-{};{}", pet.tier, pet.pet_type, f));
     }
 
     return i;
@@ -118,8 +144,7 @@ pub async fn do_shit(page: i32) {
 
         let stringified: String = serde_json::to_string(&item).unwrap();
 
-        let _res: i32 = auctions.lpush(id, stringified).await.unwrap();
-
+        let _res: i32 = auctions.hset(id, &item.item.uuid,  stringified).await.unwrap();
 
         let _a = get_price(&item).await;
 
@@ -145,11 +170,11 @@ pub async fn save_ended_auctions() {
         let id: &String = &item.nbt.i[0].tag.extra_attributes.id;
 
         let stringified: String = serde_json::to_string(&item).unwrap();
-        let _res: i32 = auctions.lpush(id, stringified).await.unwrap();
-        println!(
-            "Found Ended Item {} with Starting Bid of {} and a Price of {}",
-            id, item.item.price, item.item.price
-        );
+        let _res: i32 = auctions.hset(id, &item.item.uuid, stringified).await.unwrap();
+       // println!(
+      //      "Found Ended Item {} with Starting Bid of {} and a Price of {}",
+      //      id, item.item.price, item.item.price
+      //  );
     }
 }
 
@@ -166,7 +191,7 @@ pub async fn get_price(item: &ConfiguredAuctionItem) -> i64 {
     let mid = similar.len() / 2;
 
     let median: &ConfiguredEndedAuctionItem = &similar[mid];
-    println!("Matched Item {} with the Item {} with the Price of {}. Had {} Refrences.", item.nbt.i[0].tag.display.name, median.nbt.i[0].tag.display.name, median.item.price, similar.len());
+    //println!("Matched Item {} with the Item {} with the Price of {}. Had {} Refrences.", item.nbt.i[0].tag.display.name, median.nbt.i[0].tag.display.name, median.item.price, similar.len());
 
     return median.item.price;
 }
@@ -179,19 +204,13 @@ fn keys_match<T: Eq + Hash, U, V>(map1: &HashMap<T, U>, map2: &HashMap<T, V>) ->
 
 async fn get_best_auctions(item: &ConfiguredAuctionItem) -> Vec<ConfiguredEndedAuctionItem> {
     let mut connection = get_connection(Connection::EndedAuctions);
-    let vec: Vec<String> = connection
-        .lrange(&item.nbt.i[0].tag.extra_attributes.id, 0, -1)
-        .await
-        .unwrap();
+    let h: HashMap<String, String> = connection.hgetall(&item.nbt.i[0].tag.extra_attributes.id).await.unwrap();
 
     let extra: &PartialExtraAttr = &item.nbt.i[0].tag.extra_attributes;
     let mut relevant: Vec<ConfiguredEndedAuctionItem> = Vec::new();
-    let mut ids: Vec<String> = Vec::new();
 
-    for x in vec.iter() {
-        let ended: ConfiguredEndedAuctionItem = serde_json::from_str(x).unwrap();
-        if !ids.contains(&ended.item.uuid) { 
-        ids.push(ended.item.uuid.clone().to_string());
+    for (_id, stringified) in &h {
+        let ended: ConfiguredEndedAuctionItem = serde_json::from_str(stringified).unwrap();
         let ended_extra: &PartialExtraAttr = &item.nbt.i[0].tag.extra_attributes;
 
         if ended_extra.recombed.unwrap_or(0) == extra.recombed.unwrap_or(0)
@@ -206,7 +225,6 @@ async fn get_best_auctions(item: &ConfiguredAuctionItem) -> Vec<ConfiguredEndedA
         {
             relevant.push(ended);
         }
-    }
     }
 
    // relevant =  relevant.into_iter().filter(|x| relevant.contains(&x)).collect();
