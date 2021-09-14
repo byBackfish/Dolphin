@@ -9,13 +9,36 @@ pub struct ConfiguredAuctionItem {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct ConfiguredEndedAuctionItem {
+	pub item: EndedAuctionItem,
+	pub nbt: PartialNbt
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct EndedAuctionItem {
+	#[serde(rename = "auction_id")]
+	pub uuid: String,
+   	#[serde(rename = "item_bytes")]
+	pub bytes: ItemBytes,
+	pub price: i64,
+	pub timestamp: i64,
+	pub seller: String,
+	pub seller_profile: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct AuctionItem {
-   pub uuid: String,
+   	pub uuid: String,
    	#[serde(rename = "item_bytes")]
 	pub bytes: ItemBytes,
 	#[serde(rename = "starting_bid")]
 	pub price: i64,
-	
+	pub start: i64,
+	#[serde(rename = "item_lore")]
+	pub lore: String,
+	pub auctioneer: String,
+	pub category: String,
+	pub tier: String
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]

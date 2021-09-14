@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2018"
 
 [dependencies]
-lazy_static = {}
-tokio = { version = "1.11.0", features = ["full"] }
-reqwest = { features = ["json", "gzip", "brotli"] }
-serde="1.0"
-serde_derive="1.0"
-serde_json = { }
-ws = {}
-eventual = {}
-base64 = {}
-hematite-nbt = {}
-redis = {  version = "0.21.2", features = ["tokio-comp"] }
+lazy_static =       { version = "1.4.0" }
+tokio  =            { version = "1.11.0", features = ["full"] }
+reqwest =           { version = "0.11.4", features = ["json", "gzip", "brotli", "blocking"] }
+serde =             { version = "1.0.130" }
+serde_derive =      { version = "1.0.130" }
+serde_json =        { version = "1.0.67" }
+ws =                { version = "0.9.1" }
+futures =           { version = "0.3.17" }
+base64 =            { version = "0.13.0" }
+hematite-nbt =      { version = "0.5.2" }
+redis =             { version = "0.21.2", features = ["tokio-comp"] }

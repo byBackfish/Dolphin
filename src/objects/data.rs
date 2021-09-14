@@ -37,6 +37,8 @@ pub struct PartialExtraAttr {
 	pub hotpotato: Option<i32>,
     #[serde(rename = "enchantments")]  
 	pub enchantments: Option<HashMap<String, i32>>,
+	#[serde(rename = "petInfo")]  
+	pub pet: Option<String>
 }
 
 #[derive(Deserialize, Serialize)]
@@ -45,4 +47,12 @@ pub struct DisplayInfo {
 	pub name: String,
 	#[serde(rename = "Lore")]
 	pub lore: Vec<String>,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct Pet {
+    #[serde(rename = "type")]
+    pub pet_type: String,
+    #[serde(rename = "tier")]
+    pub tier: String,
 }
