@@ -3,13 +3,13 @@ static mut CONNECTIONS: Vec<redis::aio::MultiplexedConnection> = vec![];
 pub async fn init(){
     println!("Initializing Redis AIO Connections...");
     unsafe {
-        let lowest_bin_client: redis::Client = redis::Client::open("redis://fragrunner.me:6001").unwrap();
+        let lowest_bin_client: redis::Client = redis::Client::open("redis://localhost:6001").unwrap();
         let lowest_bin_connection: redis::aio::MultiplexedConnection = lowest_bin_client.get_multiplexed_tokio_connection().await.unwrap();
        
-        let auctions_client: redis::Client = redis::Client::open("redis://fragrunner.me:6002").unwrap();
+        let auctions_client: redis::Client = redis::Client::open("redis://localhost:6002").unwrap();
         let auctions_connection: redis::aio::MultiplexedConnection = auctions_client.get_multiplexed_tokio_connection().await.unwrap();
        
-        let ended_auctions_client: redis::Client = redis::Client::open("redis://fragrunner.me:6003").unwrap();
+        let ended_auctions_client: redis::Client = redis::Client::open("redis://localhost:6003").unwrap();
         let ended_auctions_connection: redis::aio::MultiplexedConnection = ended_auctions_client.get_multiplexed_tokio_connection().await.unwrap();
 
 
